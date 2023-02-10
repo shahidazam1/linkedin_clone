@@ -1,0 +1,52 @@
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Experience } from '../domain/schemas/experience.schema';
+import { Profile } from '../domain/schemas/profile.schema';
+import { CreateExperienceDto } from './dto/create-experience.dto';
+import { UpdateExperienceDto } from './dto/update-experience.dto';
+
+@Injectable()
+export class ExperienceService {
+  constructor(
+    @InjectModel(Profile.name) private profileModel: Model<Profile>,
+    @InjectModel(Experience.name) private expModel: Model<Experience>,
+  ) {}
+
+  async create(exp: CreateExperienceDto, userId) {
+    const profile = await this.profileModel.findOne({ _id: userId });
+
+    if (!profile) {
+      throw new BadRequestException('Profile Not Found');
+    }
+
+    let expDetails = new this.expModel();
+    expDetails.title = exp.title;
+    expDetails.type = exp.type;
+    expDetails.companyName = exp.companyName;
+    expDetails.location = exp.location;
+    expDetails.startDate = exp.startDate;
+    expDetails.endDate = exp.endDate;
+    expDetails.industry = exp.industry;
+    expDetails.profileId = profile._id;
+    await expDetails.save();
+
+    return expDetails;
+  }
+
+  findAll() {
+    return `This action returns all experience`;
+  }
+
+  findOne(id: number) {
+    return `This action returns a #${id} experience`;
+  }
+
+  update(id: number, updateExperienceDto: UpdateExperienceDto) {
+    return `This action updates a #${id} experience`;
+  }
+
+  remove(id: number) {
+    return `This action removes a #${id} experience`;
+  }
+}
