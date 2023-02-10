@@ -5,8 +5,10 @@ import { MulterModule } from '@nestjs/platform-express';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from 'src/modules/auth/auth.module';
 import { DomainModule } from 'src/modules/domain/domain.module';
+import { EducationModule } from 'src/modules/education/education.module';
 import { ExperienceModule } from 'src/modules/experience/experience.module';
 import { ProfileModule } from 'src/modules/profile/profile.module';
+import { SkillsModule } from 'src/modules/skills/skills.module';
 import mongoConfig from '../config/mongodb-connection';
 
 ConfigModule.forRoot({ isGlobal: true });
@@ -22,6 +24,8 @@ ConfigModule.forRoot({ isGlobal: true });
     AuthModule,
     ProfileModule,
     ExperienceModule,
+    EducationModule,
+    SkillsModule,
   ],
 })
 export class AppModule {}

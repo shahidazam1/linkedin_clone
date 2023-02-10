@@ -32,10 +32,14 @@ export class ProfileService {
     return profileDetails;
   }
 
-  async findAll() {
-    const profiles = await this.profileModel.find({});
+  async findOne(id, userId) {
+    const profile = await this.profileModel.findOne({ userId });
 
-    return profiles;
+    if (!profile) {
+      throw new BadRequestException('Not Found');
+    }
+
+    return await this.profileModel.findOne({ id });
   }
 
   async getMyProfile(id: string) {
@@ -45,9 +49,35 @@ export class ProfileService {
       throw new BadRequestException('user Not exists');
     }
 
-    const profile = await this.profileModel.findOne({ userId: id });
+    const profile = await this.profileModel.aggregate([
+      { $match: { userId: user._id } },
+      {
+        $lookup: {
+          from: 'experience',
+          localField: '_id',
+          foreignField: 'profileId',
+          as: 'experience',
+        },
+      },
+      {
+        $lookup: {
+          from: 'education',
+          localField: '_id',
+          foreignField: 'profileId',
+          as: 'education',
+        },
+      },
+      {
+        $lookup: {
+          from: 'skills',
+          localField: '_id',
+          foreignField: 'profileId',
+          as: 'skills',
+        },
+      },
+    ]);
 
-    return profile;
+    return profile[0];
   }
 
   async update(id: string, updateProfile: UpdateProfileDto, userId: string) {

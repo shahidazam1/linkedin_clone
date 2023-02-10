@@ -50,9 +50,9 @@ export class ProfileController {
     return file;
   }
 
-  @Get()
-  findAll() {
-    return this.profileService.findAll();
+  @Get(':id')
+  findOne(@Param('id') id: string, @Req() req: any) {
+    return this.profileService.findOne(id, req.user.id);
   }
 
   @Get('my-profile')

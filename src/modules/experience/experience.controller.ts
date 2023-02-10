@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { ExperienceService } from './experience.service';
 import { CreateExperienceDto } from './dto/create-experience.dto';
-import { UpdateExperienceDto } from './dto/update-experience.dto';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 @UseGuards(JwtAuthGuard)
 @Controller('experience')
@@ -30,13 +29,13 @@ export class ExperienceController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.experienceService.findOne(+id);
+    return this.experienceService.findOne(id);
   }
 
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateExperienceDto: UpdateExperienceDto,
+    @Body() updateExperienceDto: CreateExperienceDto,
   ) {
     return this.experienceService.update(+id, updateExperienceDto);
   }

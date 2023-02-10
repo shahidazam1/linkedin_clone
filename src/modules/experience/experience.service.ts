@@ -4,7 +4,6 @@ import { Model } from 'mongoose';
 import { Experience } from '../domain/schemas/experience.schema';
 import { Profile } from '../domain/schemas/profile.schema';
 import { CreateExperienceDto } from './dto/create-experience.dto';
-import { UpdateExperienceDto } from './dto/update-experience.dto';
 
 @Injectable()
 export class ExperienceService {
@@ -55,11 +54,15 @@ export class ExperienceService {
     return { data };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} experience`;
+  async findOne(id: string) {
+    const expDetails = await this.expModel.findOne({ id });
+    if (!expDetails) {
+      throw new BadRequestException('Experience Not Found');
+    }
+    return await this.expModel.findOne({ _id: expDetails._id });
   }
 
-  update(id: number, updateExperienceDto: UpdateExperienceDto) {
+  update(id: number, updateExperienceDto: CreateExperienceDto) {
     return `This action updates a #${id} experience`;
   }
 
