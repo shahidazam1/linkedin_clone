@@ -7,11 +7,13 @@ import {
   Param,
   Delete,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import { ExperienceService } from './experience.service';
 import { CreateExperienceDto } from './dto/create-experience.dto';
 import { UpdateExperienceDto } from './dto/update-experience.dto';
-
+import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
+@UseGuards(JwtAuthGuard)
 @Controller('experience')
 export class ExperienceController {
   constructor(private readonly experienceService: ExperienceService) {}
@@ -22,8 +24,8 @@ export class ExperienceController {
   }
 
   @Get()
-  findAll() {
-    return this.experienceService.findAll();
+  findAll(@Req() req: any) {
+    return this.experienceService.findAll(req.user.id);
   }
 
   @Get(':id')

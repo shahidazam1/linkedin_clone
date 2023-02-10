@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
-@Schema()
+@Schema({ timestamps: true, collection: 'profiles' })
 export class Profile extends Document {
   @Prop()
   firstName: string;

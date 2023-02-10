@@ -14,7 +14,7 @@ export class ExperienceService {
   ) {}
 
   async create(exp: CreateExperienceDto, userId) {
-    const profile = await this.profileModel.findOne({ _id: userId });
+    const profile = await this.profileModel.findOne({ userId: userId });
 
     if (!profile) {
       throw new BadRequestException('Profile Not Found');
@@ -34,8 +34,25 @@ export class ExperienceService {
     return expDetails;
   }
 
-  findAll() {
-    return `This action returns all experience`;
+  async findAll(userId) {
+    const profileDetails = await this.profileModel.findOne({ userId: userId });
+    if (!profileDetails) {
+      throw new BadRequestException('Profile Not Found');
+    }
+    const exp = await this.expModel.find({ profileId: profileDetails._id });
+
+    const data = await this.profileModel.aggregate([
+      {
+        $lookup: {
+          from: 'experience',
+          localField: '_id',
+          foreignField: 'profileId',
+          as: 'exp',
+        },
+      },
+    ]);
+
+    return { data };
   }
 
   findOne(id: number) {
