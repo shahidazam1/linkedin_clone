@@ -29,19 +29,29 @@ export class SkillsService {
     return skill;
   }
 
-  findAll() {
-    return `This action returns all skills`;
+  async findAll() {
+    return await this.skillModel.find({});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} skill`;
+  async findOne(id: string) {
+    return await this.skillModel.findOne({ _id: id });
   }
 
-  update(id: number, updateSkillDto: UpdateSkillDto) {
-    return `This action updates a #${id} skill`;
+  async update(id: string, skillDto: CreateSkillDto) {
+    const skillData = await this.skillModel.findOne({ _id: id });
+
+    if (!skillData) {
+      throw new BadRequestException('Skill Not Found');
+    }
+
+    skillData.skill = skillDto.skill;
+
+    await skillData.save();
+
+    return skillData;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} skill`;
+  async remove(id: string) {
+    return await this.skillModel.remove({ _id: id });
   }
 }

@@ -10,7 +10,10 @@ import {
   Req,
 } from '@nestjs/common';
 import { EducationService } from './education.service';
-import { CreateEducationDto } from './dto/create-education.dto';
+import {
+  CreateEducationDto,
+  UpdateEducationDto,
+} from './dto/create-education.dto';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
@@ -23,21 +26,21 @@ export class EducationController {
     return this.educationService.create(createEducationDto, req.user.id);
   }
 
-  @Get()
-  findOneByProfile() {
-    return this.educationService.findOneByProfile();
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.educationService.findOne(id);
   }
 
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateEducationDto: CreateEducationDto,
+    @Body() updateEducationDto: UpdateEducationDto,
   ) {
-    return this.educationService.update(+id, updateEducationDto);
+    return this.educationService.update(id, updateEducationDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.educationService.remove(+id);
+    return this.educationService.remove(id);
   }
 }

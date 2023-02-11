@@ -25,3 +25,29 @@ export class CreateEducationDto {
   @IsString()
   endDate: string;
 }
+
+export class UpdateEducationDto {
+  @IsOptional()
+  @IsString()
+  school: string;
+
+  @IsOptional()
+  @IsString()
+  degree: string;
+
+  @IsOptional()
+  @IsString()
+  field: string;
+
+  @IsOptional()
+  @IsString()
+  grade: string;
+
+  @IsOptional()
+  @IsString()
+  startDate: string;
+
+  @IsOptional()
+  @IsString()
+  endDate: string;
+}

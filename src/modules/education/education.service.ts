@@ -3,7 +3,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Education } from '../domain/schemas/education.schema';
 import { Profile } from '../domain/schemas/profile.schema';
-import { CreateEducationDto } from './dto/create-education.dto';
+import {
+  CreateEducationDto,
+  UpdateEducationDto,
+} from './dto/create-education.dto';
 
 @Injectable()
 export class EducationService {
@@ -32,19 +35,35 @@ export class EducationService {
     return eduDetails;
   }
 
-  findAll() {
-    return `This action returns all education`;
+  async findOne(id: string) {
+    const expDetails = await this.eduModel.findOne({ _id: id });
+
+    if (!expDetails) {
+      throw new BadRequestException('Experience Not Found');
+    }
+    return await this.eduModel.findOne({ _id: expDetails._id });
   }
 
-  async findOneByProfile() {
-    return 'no null';
+  async update(id: string, eduData: UpdateEducationDto) {
+    const eduDetails = await this.eduModel.findOne({ _id: id });
+
+    if (!eduDetails) {
+      throw new BadRequestException('Profile Not Found');
+    }
+
+    eduDetails.school = eduData.school;
+    eduDetails.degree = eduData.degree;
+    eduDetails.field = eduData.field;
+    eduDetails.grade = eduData.grade;
+    eduDetails.startDate = eduData.startDate;
+    eduDetails.endDate = eduData.endDate;
+    await eduDetails.save();
+
+    return eduDetails;
   }
 
-  update(id: number, updateEducationDto: CreateEducationDto) {
-    return `This action updates a #${id} education`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} education`;
+  async remove(id: string) {
+    await this.eduModel.remove({ _id: id });
+    return { message: 'success' };
   }
 }

@@ -31,16 +31,16 @@ export class SkillsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.skillsService.findOne(+id);
+    return this.skillsService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSkillDto: UpdateSkillDto) {
-    return this.skillsService.update(+id, updateSkillDto);
+  update(@Param('id') id: string, @Body() updateSkillDto: CreateSkillDto) {
+    return this.skillsService.update(id, updateSkillDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.skillsService.remove(+id);
+    return this.skillsService.remove(id);
   }
 }

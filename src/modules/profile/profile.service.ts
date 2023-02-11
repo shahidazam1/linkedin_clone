@@ -32,14 +32,14 @@ export class ProfileService {
     return profileDetails;
   }
 
-  async findOne(id, userId) {
+  async findOne(id: string, userId: string) {
     const profile = await this.profileModel.findOne({ userId });
 
     if (!profile) {
       throw new BadRequestException('Not Found');
     }
 
-    return await this.profileModel.findOne({ id });
+    return await this.profileModel.findOne({ _id: id });
   }
 
   async getMyProfile(id: string) {
@@ -77,7 +77,7 @@ export class ProfileService {
       },
     ]);
 
-    return profile[0];
+    return profile;
   }
 
   async update(id: string, updateProfile: UpdateProfileDto, userId: string) {

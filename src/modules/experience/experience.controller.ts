@@ -10,8 +10,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ExperienceService } from './experience.service';
-import { CreateExperienceDto } from './dto/create-experience.dto';
+import {
+  CreateExperienceDto,
+  UpdateExperienceDto,
+} from './dto/create-experience.dto';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
+
 @UseGuards(JwtAuthGuard)
 @Controller('experience')
 export class ExperienceController {
@@ -35,13 +39,13 @@ export class ExperienceController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateExperienceDto: CreateExperienceDto,
+    @Body() updateExperienceDto: UpdateExperienceDto,
   ) {
-    return this.experienceService.update(+id, updateExperienceDto);
+    return this.experienceService.update(id, updateExperienceDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.experienceService.remove(+id);
+    return this.experienceService.remove(id);
   }
 }

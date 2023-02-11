@@ -3,7 +3,10 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Experience } from '../domain/schemas/experience.schema';
 import { Profile } from '../domain/schemas/profile.schema';
-import { CreateExperienceDto } from './dto/create-experience.dto';
+import {
+  CreateExperienceDto,
+  UpdateExperienceDto,
+} from './dto/create-experience.dto';
 
 @Injectable()
 export class ExperienceService {
@@ -55,18 +58,35 @@ export class ExperienceService {
   }
 
   async findOne(id: string) {
-    const expDetails = await this.expModel.findOne({ id });
+    const expDetails = await this.expModel.findOne({ _id: id });
+
     if (!expDetails) {
       throw new BadRequestException('Experience Not Found');
     }
     return await this.expModel.findOne({ _id: expDetails._id });
   }
 
-  update(id: number, updateExperienceDto: CreateExperienceDto) {
-    return `This action updates a #${id} experience`;
+  async update(id: string, exp: UpdateExperienceDto) {
+    const expDetails = await this.expModel.findOne({ _id: id });
+
+    if (!expDetails) {
+      throw new BadRequestException('Experence Not Found');
+    }
+
+    expDetails.title = exp.title;
+    expDetails.type = exp.type;
+    expDetails.companyName = exp.companyName;
+    expDetails.location = exp.location;
+    expDetails.startDate = exp.startDate;
+    expDetails.endDate = exp.endDate;
+    expDetails.industry = exp.industry;
+    await expDetails.save();
+
+    return expDetails;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} experience`;
+  async remove(id: string) {
+    await this.expModel.remove({ _id: id });
+    return { message: 'success' };
   }
 }
