@@ -27,29 +27,16 @@ export class ProfileController {
     return this.profileService.create(createProfileDto, req.user.id);
   }
 
-  // @Post('upload-p')
-  // @UseInterceptors(FileInterceptor('file'))
-  // uploadFile(@UploadedFile() file: Express.Multer.File) {
-  //   console.log(file);
-  // }
-
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   uploadOrganizationLogo(@UploadedFile() file: Express.Multer.File) {
     return this.profileService.uploadOrganizationLogo(file);
   }
 
-  // @Post('upload')
-  // @UseInterceptors(
-  //   FileInterceptor('file', {
-  //     storage: diskStorage({
-  //       destination: './uploads',
-  //     }),
-  //   }),
-  // )
-  // uploadMultipleFiles(@UploadedFile() file) {
-  //   return file;
-  // }
+  @Get()
+  getAll() {
+    return this.profileService.getAll();
+  }
 
   @Get('my-profile')
   getMyProfile(@Req() req: any) {
@@ -72,6 +59,6 @@ export class ProfileController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.profileService.remove(+id);
+    return this.profileService.remove(id);
   }
 }
