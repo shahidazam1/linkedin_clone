@@ -8,6 +8,7 @@ import { DomainModule } from 'src/modules/domain/domain.module';
 import { EducationModule } from 'src/modules/education/education.module';
 import { ExperienceModule } from 'src/modules/experience/experience.module';
 import { ProfileModule } from 'src/modules/profile/profile.module';
+import { S3ResourcesModule } from 'src/modules/s3-resources/s3-resources.module';
 import { SkillsModule } from 'src/modules/skills/skills.module';
 import mongoConfig from '../config/mongodb-connection';
 
@@ -26,6 +27,7 @@ ConfigModule.forRoot({ isGlobal: true });
     ExperienceModule,
     EducationModule,
     SkillsModule,
+    S3ResourcesModule,
   ],
 })
 export class AppModule {}

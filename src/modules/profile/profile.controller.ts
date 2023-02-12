@@ -15,7 +15,6 @@ import { ProfileService } from './profile.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
-import { diskStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @UseGuards(JwtAuthGuard)
@@ -35,16 +34,22 @@ export class ProfileController {
   // }
 
   @Post('upload')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      // storage: diskStorage({
-      //   destination: './uploads',
-      // }),
-    }),
-  )
-  uploadMultipleFiles(@UploadedFile() file) {
-    return file;
+  @UseInterceptors(FileInterceptor('file'))
+  uploadOrganizationLogo(@UploadedFile() file: Express.Multer.File) {
+    return this.profileService.uploadOrganizationLogo(file);
   }
+
+  // @Post('upload')
+  // @UseInterceptors(
+  //   FileInterceptor('file', {
+  //     storage: diskStorage({
+  //       destination: './uploads',
+  //     }),
+  //   }),
+  // )
+  // uploadMultipleFiles(@UploadedFile() file) {
+  //   return file;
+  // }
 
   @Get('my-profile')
   getMyProfile(@Req() req: any) {

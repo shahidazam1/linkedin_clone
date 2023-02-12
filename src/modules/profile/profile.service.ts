@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Profile } from '../domain/schemas/profile.schema';
 import { User } from '../domain/schemas/user.schema';
+import { S3ResourcesService } from '../s3-resources/services/s3-resources.service';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 
@@ -11,6 +12,7 @@ export class ProfileService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Profile.name) private profileModel: Model<Profile>,
+    private readonly s3ResourcesService: S3ResourcesService,
   ) {}
 
   async create(profile: CreateProfileDto, id: string) {
@@ -78,6 +80,10 @@ export class ProfileService {
     ]);
 
     return profile;
+  }
+
+  uploadOrganizationLogo(file: Express.Multer.File) {
+    return this.s3ResourcesService.organizationResource.uploadImage({ file });
   }
 
   async update(id: string, updateProfile: UpdateProfileDto, userId: string) {
