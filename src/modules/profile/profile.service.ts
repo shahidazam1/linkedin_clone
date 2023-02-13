@@ -1,10 +1,11 @@
+import { Connections } from './../domain/schemas/connections.schema';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Profile } from '../domain/schemas/profile.schema';
 import { User } from '../domain/schemas/user.schema';
 import { S3ResourcesService } from '../s3-resources/services/s3-resources.service';
-import { CreateProfileDto } from './dto/create-profile.dto';
+import { ConnectDto, CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
@@ -12,6 +13,7 @@ export class ProfileService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Profile.name) private profileModel: Model<Profile>,
+    @InjectModel(Connections.name) private connectionModel: Model<Connections>,
     private readonly s3ResourcesService: S3ResourcesService,
   ) {}
 
@@ -38,6 +40,44 @@ export class ProfileService {
     await profileDetails.save();
 
     return profileDetails;
+  }
+
+  async addConnection(connectData: ConnectDto, userId: string) {
+    const user = await this.userModel.findOne({ _id: userId });
+
+    if (!user) {
+      throw new BadRequestException('user Not exists');
+    }
+
+    const exist = await this.profileModel.findOne({ userId: user._id });
+
+    if (!exist) {
+      throw new BadRequestException('profile already exist');
+    }
+
+    const connectionExist = await this.profileModel.findOne({
+      _id: connectData.connectionProfileId,
+    });
+
+    if (!connectionExist) {
+      throw new BadRequestException('User already exist');
+    }
+
+    const alreadyConnection = await this.connectionModel.findOne(
+      {
+        profileId: exist._id,
+      },
+      { connectionProfileId: connectData.connectionProfileId },
+    );
+    return alreadyConnection;
+
+    const connect = new this.connectionModel();
+    connect.profileId = exist._id;
+    connect.connectionProfileId = connectData.connectionProfileId;
+    connect.status = connectData.status;
+
+    await connect.save();
+    return { message: 'Invitaion Sent' };
   }
 
   async findOne(id: string, userId: string) {
@@ -85,6 +125,14 @@ export class ProfileService {
           localField: '_id',
           foreignField: 'profileId',
           as: 'skills',
+        },
+      },
+      {
+        $lookup: {
+          from: 'connections',
+          localField: '_id',
+          foreignField: 'profileId',
+          as: 'connections',
         },
       },
     ]);

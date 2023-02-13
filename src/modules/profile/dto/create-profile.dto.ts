@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { REQUEST_STATUS } from 'src/utils/constants';
 
 export class CreateProfileDto {
   @IsNotEmpty()
@@ -20,4 +21,14 @@ export class CreateProfileDto {
   @IsOptional()
   @IsString()
   about: string;
+}
+
+export class ConnectDto {
+  @IsNotEmpty()
+  @IsString()
+  connectionProfileId: string;
+
+  @IsNotEmpty()
+  // @IsEnum(REQUEST_STATUS)
+  status: string;
 }

@@ -11,12 +11,14 @@ import { User } from '../domain/schemas/user.schema';
 import { Model } from 'mongoose';
 import { SigninDto } from './dto/sign-in.dto';
 import { verifyPassword } from 'src/utils/constants';
+import { Profile } from '../domain/schemas/profile.schema';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Profile.name) private profileModel: Model<Profile>,
   ) {}
 
   async signup(signupDto: SignupDto) {
@@ -32,6 +34,10 @@ export class AuthService {
     user.mobile = signupDto.mobile;
     user.password = await bcrypt.hash(signupDto.password, 10);
     await user.save();
+
+    let profileDetails = new this.profileModel();
+    profileDetails.firstName = signupDto.name;
+    await profileDetails.save();
 
     const payload = { sub: user._id, userId: user._id };
     const token = this.jwtService.sign(payload);

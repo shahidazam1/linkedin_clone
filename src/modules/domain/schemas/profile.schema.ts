@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Connections, ConnectionsSchema } from './connections.schema';
 
 @Schema({ timestamps: true, collection: 'profiles' })
 export class Profile extends Document {

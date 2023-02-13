@@ -11,3 +11,9 @@ export enum EMPLOYEE_TYPE {
   'Internship',
   'Trainee',
 }
+
+export enum REQUEST_STATUS {
+  'Accepted',
+  'Pending',
+  'Rejected',
+}
