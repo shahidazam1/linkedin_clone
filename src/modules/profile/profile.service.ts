@@ -69,7 +69,7 @@ export class ProfileService {
       },
       { connectionProfileId: connectData.connectionProfileId },
     );
-    return alreadyConnection;
+    // return alreadyConnection;
 
     const connect = new this.connectionModel();
     connect.profileId = exist._id;
