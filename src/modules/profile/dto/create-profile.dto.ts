@@ -22,13 +22,3 @@ export class CreateProfileDto {
   @IsString()
   about: string;
 }
-
-export class ConnectDto {
-  @IsNotEmpty()
-  @IsString()
-  connectionProfileId: string;
-
-  @IsNotEmpty()
-  // @IsEnum(REQUEST_STATUS)
-  status: string;
-}

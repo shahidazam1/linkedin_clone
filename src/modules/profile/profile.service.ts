@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 import { Profile } from '../domain/schemas/profile.schema';
 import { User } from '../domain/schemas/user.schema';
 import { S3ResourcesService } from '../s3-resources/services/s3-resources.service';
-import { ConnectDto, CreateProfileDto } from './dto/create-profile.dto';
+import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @Injectable()
@@ -40,44 +40,6 @@ export class ProfileService {
     await profileDetails.save();
 
     return profileDetails;
-  }
-
-  async addConnection(connectData: ConnectDto, userId: string) {
-    const user = await this.userModel.findOne({ _id: userId });
-
-    if (!user) {
-      throw new BadRequestException('user Not exists');
-    }
-
-    const exist = await this.profileModel.findOne({ userId: user._id });
-
-    if (!exist) {
-      throw new BadRequestException('profile already exist');
-    }
-
-    const connectionExist = await this.profileModel.findOne({
-      _id: connectData.connectionProfileId,
-    });
-
-    if (!connectionExist) {
-      throw new BadRequestException('User already exist');
-    }
-
-    const alreadyConnection = await this.connectionModel.findOne(
-      {
-        profileId: exist._id,
-      },
-      { connectionProfileId: connectData.connectionProfileId },
-    );
-    // return alreadyConnection;
-
-    const connect = new this.connectionModel();
-    connect.profileId = exist._id;
-    connect.connectionProfileId = connectData.connectionProfileId;
-    connect.status = connectData.status;
-
-    await connect.save();
-    return { message: 'Invitaion Sent' };
   }
 
   async findOne(id: string, userId: string) {

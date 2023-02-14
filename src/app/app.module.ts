@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { MulterModule } from '@nestjs/platform-express';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AuthModule } from 'src/modules/auth/auth.module';
+import { ConnectionsModule } from 'src/modules/connections/connections.module';
 import { DomainModule } from 'src/modules/domain/domain.module';
 import { EducationModule } from 'src/modules/education/education.module';
 import { ExperienceModule } from 'src/modules/experience/experience.module';
@@ -28,6 +29,7 @@ ConfigModule.forRoot({ isGlobal: true });
     EducationModule,
     SkillsModule,
     S3ResourcesModule,
+    ConnectionsModule,
   ],
 })
 export class AppModule {}

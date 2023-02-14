@@ -12,7 +12,7 @@ import {
   UploadedFile,
 } from '@nestjs/common';
 import { ProfileService } from './profile.service';
-import { CreateProfileDto, ConnectDto } from './dto/create-profile.dto';
+import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -25,11 +25,6 @@ export class ProfileController {
   @Post()
   create(@Body() createProfileDto: CreateProfileDto, @Req() req: any) {
     return this.profileService.create(createProfileDto, req.user.id);
-  }
-
-  @Post('connect')
-  addConnection(@Body() connectData: ConnectDto, @Req() req: any) {
-    return this.profileService.addConnection(connectData, req.user.id);
   }
 
   @Post('upload')
