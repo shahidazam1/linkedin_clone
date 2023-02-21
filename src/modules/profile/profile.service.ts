@@ -99,7 +99,7 @@ export class ProfileService {
       },
     ]);
 
-    return profile;
+    return profile[0];
   }
 
   uploadOrganizationLogo(file: Express.Multer.File) {
