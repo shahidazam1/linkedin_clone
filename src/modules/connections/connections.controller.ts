@@ -28,6 +28,11 @@ export class ConnectionsController {
     return this.connectionsService.findAll(req.user.id);
   }
 
+  @Get()
+  getAllInvitations(@Req() req: any) {
+    return this.connectionsService.getAllInvitations(req.user.id);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.connectionsService.findOne(+id);

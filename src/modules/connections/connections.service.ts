@@ -36,22 +36,68 @@ export class ConnectionsService {
       throw new BadRequestException('User already exist');
     }
 
-    const connect = new this.connectionModel();
-    connect.profileId = exist._id;
-    connect.connectionProfileId = connectData.connectionProfileId;
-    connect.status = connectData.status;
+    if (connectData.status === 'Pending') {
+      const connect = new this.connectionModel();
+      connect.profileId = exist._id;
+      connect.connectionProfileId = connectData.connectionProfileId;
+      connect.status = connectData.status;
 
-    await connect.save();
-    return { message: 'Invitaion Sent' };
+      await connect.save();
+      return { message: 'Invitaion Sent' };
+    }
+
+    if (connectData.status === 'Rejected') {
+      await this.connectionModel.deleteOne({
+        where: { status: 'Rejected' },
+      });
+
+      return { message: 'Invitaion Reverted' };
+    }
   }
 
   async findAll(userId) {
-    console.log(userId);
     const id = new mongoose.Types.ObjectId(userId);
     const people = await this.profileModel.aggregate([
       { $match: { userId: { $ne: id } } },
+      {
+        $lookup: {
+          from: 'connections',
+          localField: '_id',
+          foreignField: 'connectionProfileId',
+          as: 'connection',
+        },
+      },
+      {
+        $unwind: {
+          path: '$connection',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
     ]);
     return people;
+  }
+
+  async getAllInvitations(userId) {
+    // const profile = await this.profileModel.findOne({  userId });
+    const id = new mongoose.Types.ObjectId(userId);
+
+    const people = await this.profileModel.aggregate([
+      { $match: { userId: { $ne: id } } },
+      {
+        $lookup: {
+          from: 'connections',
+          localField: '_id',
+          foreignField: 'connectionProfileId',
+          as: 'connection',
+        },
+      },
+      {
+        $unwind: {
+          path: '$connection',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ]);
   }
 
   findOne(id: number) {
