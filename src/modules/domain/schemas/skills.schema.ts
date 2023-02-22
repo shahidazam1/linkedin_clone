@@ -3,7 +3,7 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
 
 @Schema({ timestamps: true, collection: 'skills' })
 export class Skills extends Document {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   skill: string;
 
   @Prop({ type: MongooseSchema.Types.ObjectId, required: true })

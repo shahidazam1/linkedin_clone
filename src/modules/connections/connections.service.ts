@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { exists } from 'fs';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { Connections } from '../domain/schemas/connections.schema';
 import { Profile } from '../domain/schemas/profile.schema';
 import { User } from '../domain/schemas/user.schema';
@@ -45,8 +45,13 @@ export class ConnectionsService {
     return { message: 'Invitaion Sent' };
   }
 
-  async findAll() {
-    return await this.connectionModel.find({});
+  async findAll(userId) {
+    console.log(userId);
+    const id = new mongoose.Types.ObjectId(userId);
+    const people = await this.profileModel.aggregate([
+      { $match: { userId: { $ne: id } } },
+    ]);
+    return people;
   }
 
   findOne(id: number) {

@@ -24,8 +24,8 @@ export class ConnectionsController {
   }
 
   @Get()
-  findAll() {
-    return this.connectionsService.findAll();
+  findAll(@Req() req: any) {
+    return this.connectionsService.findAll(req.user.id);
   }
 
   @Get(':id')

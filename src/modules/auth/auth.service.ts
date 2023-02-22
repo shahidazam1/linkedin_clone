@@ -37,6 +37,7 @@ export class AuthService {
 
     let profileDetails = new this.profileModel();
     profileDetails.firstName = signupDto.name;
+    profileDetails.userId = user._id;
     await profileDetails.save();
 
     const payload = { sub: user._id, userId: user._id };
