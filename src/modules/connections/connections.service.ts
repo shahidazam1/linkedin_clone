@@ -1,3 +1,5 @@
+import { REQUEST_STATUS } from './../../utils/constants';
+import { keyBy } from 'lodash';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { exists } from 'fs';
@@ -48,33 +50,44 @@ export class ConnectionsService {
 
     if (connectData.status === 'Rejected') {
       await this.connectionModel.deleteOne({
-        where: { status: 'Rejected' },
+        where: {
+          status: 'Rejected',
+          connectionProfileId: connectData.connectionProfileId,
+          profileId: exist._id,
+        },
       });
 
       return { message: 'Invitaion Reverted' };
     }
   }
 
-  async findAll(userId) {
+  async findAll(userId: string) {
     const id = new mongoose.Types.ObjectId(userId);
+    const profile = await this.profileModel.findOne({ userId: id });
+
     const people = await this.profileModel.aggregate([
       { $match: { userId: { $ne: id } } },
+    ]);
+
+    const connections = await this.connectionModel.aggregate([
       {
-        $lookup: {
-          from: 'connections',
-          localField: '_id',
-          foreignField: 'connectionProfileId',
-          as: 'connection',
-        },
-      },
-      {
-        $unwind: {
-          path: '$connection',
-          preserveNullAndEmptyArrays: true,
+        $match: {
+          profileId: profile._id,
+          status: { $eq: 'Pending' },
         },
       },
     ]);
-    return people;
+
+    const connectionMap = keyBy(connections, 'connectionProfileId');
+
+    const data = people.map((i) => {
+      return {
+        ...i,
+        connection: connectionMap[i._id],
+      };
+    });
+
+    return data;
   }
 
   async getAllInvitations(userId) {
@@ -87,7 +100,7 @@ export class ConnectionsService {
         $lookup: {
           from: 'connections',
           localField: '_id',
-          foreignField: 'connectionProfileId',
+          foreignField: 'profileId',
           as: 'connection',
         },
       },
@@ -98,6 +111,8 @@ export class ConnectionsService {
         },
       },
     ]);
+
+    return 'hello world';
   }
 
   findOne(id: number) {
