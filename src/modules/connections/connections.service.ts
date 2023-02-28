@@ -48,6 +48,19 @@ export class ConnectionsService {
       return { message: 'Invitaion Sent' };
     }
 
+    if (connectData.status === 'Accepted') {
+      const connect = await this.connectionModel.findOne({
+        profileId: connectData.profileId,
+        connectionProfileId: exist._id,
+      });
+      connect.profileId = connectData.profileId;
+      connect.connectionProfileId = exist._id;
+      connect.status = connectData.status;
+
+      await connect.save();
+      return { message: 'Invitaion Accepted' };
+    }
+
     if (connectData.status === 'Rejected') {
       await this.connectionModel.deleteOne({
         where: {
@@ -91,28 +104,31 @@ export class ConnectionsService {
   }
 
   async getAllInvitations(userId) {
-    // const profile = await this.profileModel.findOne({  userId });
-    const id = new mongoose.Types.ObjectId(userId);
+    const profile = await this.profileModel.findOne({ userId });
 
-    const people = await this.profileModel.aggregate([
-      { $match: { userId: { $ne: id } } },
+    if (!profile) {
+      throw new BadRequestException('Pofile Not Found');
+    }
+
+    const people = await this.connectionModel.aggregate([
+      { $match: { connectionProfileId: profile._id, status: 'Pending' } },
       {
         $lookup: {
-          from: 'connections',
-          localField: '_id',
-          foreignField: 'profileId',
-          as: 'connection',
+          from: 'profiles',
+          localField: 'profileId',
+          foreignField: '_id',
+          as: 'profile',
         },
       },
       {
         $unwind: {
-          path: '$connection',
+          path: '$profile',
           preserveNullAndEmptyArrays: true,
         },
       },
     ]);
 
-    return 'hello world';
+    return people;
   }
 
   findOne(id: number) {
