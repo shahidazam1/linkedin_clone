@@ -33,6 +33,11 @@ export class ConnectionsController {
     return this.connectionsService.getAllInvitations(req.user.id);
   }
 
+  @Get('/my-connections')
+  getMyConnections(@Req() req: any) {
+    return this.connectionsService.getMyConnections(req.user.id);
+  }
+
   @Get(':id/one')
   findOne(@Param('id') id: string) {
     return this.connectionsService.findOne(+id);

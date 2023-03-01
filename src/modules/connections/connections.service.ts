@@ -30,13 +30,13 @@ export class ConnectionsService {
       throw new BadRequestException('profile already exist');
     }
 
-    const connectionExist = await this.profileModel.findOne({
-      _id: connectData.connectionProfileId,
-    });
+    // const connectionExist = await this.profileModel.findOne({
+    //   _id: connectData.connectionProfileId,
+    // });
 
-    if (!connectionExist) {
-      throw new BadRequestException('User already exist');
-    }
+    // if (!connectionExist) {
+    //   throw new BadRequestException('User already exist');
+    // }
 
     if (connectData.status === 'Pending') {
       const connect = new this.connectionModel();
@@ -48,16 +48,21 @@ export class ConnectionsService {
       return { message: 'Invitaion Sent' };
     }
 
+    const connect = await this.connectionModel.findOne({
+      profileId: connectData.profileId,
+    });
+    console.log(connect);
+
     if (connectData.status === 'Accepted') {
       const connect = await this.connectionModel.findOne({
-        profileId: connectData.profileId,
-        connectionProfileId: exist._id,
+        profileId: new mongoose.Types.ObjectId(connectData.profileId),
+        // connectionProfileId: exist._id,
       });
-      connect.profileId = connectData.profileId;
-      connect.connectionProfileId = exist._id;
-      connect.status = connectData.status;
+      // connect.profileId = connectData.profileId;
+      // connect.connectionProfileId = exist._id;
+      // connect.status = connectData.status;
 
-      await connect.save();
+      // await connect.save();
       return { message: 'Invitaion Accepted' };
     }
 
@@ -116,6 +121,57 @@ export class ConnectionsService {
         $lookup: {
           from: 'profiles',
           localField: 'profileId',
+          foreignField: '_id',
+          as: 'profile',
+        },
+      },
+      {
+        $unwind: {
+          path: '$profile',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ]);
+
+    return people;
+  }
+
+  async getMyConnections(userId) {
+    const profile = await this.profileModel.findOne({ userId });
+
+    if (!profile) {
+      throw new BadRequestException('Pofile Not Found');
+    }
+
+    const people = await this.connectionModel.aggregate([
+      {
+        $match: {
+          connectionProfileId: profile._id,
+          status: 'Accepted',
+          $or: [
+            { connectionProfileId: profile._id },
+            { profileId: profile._id },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: 'profiles',
+          localField: 'profileId',
+          foreignField: '_id',
+          as: 'profile',
+        },
+      },
+      {
+        $unwind: {
+          path: '$profile',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'profiles',
+          localField: 'connectionProfileId',
           foreignField: '_id',
           as: 'profile',
         },
