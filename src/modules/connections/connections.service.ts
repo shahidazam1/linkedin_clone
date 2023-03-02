@@ -3,7 +3,7 @@ import { keyBy } from 'lodash';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { exists } from 'fs';
-import mongoose, { Model } from 'mongoose';
+import mongoose, { Model, mongo } from 'mongoose';
 import { Connections } from '../domain/schemas/connections.schema';
 import { Profile } from '../domain/schemas/profile.schema';
 import { User } from '../domain/schemas/user.schema';
@@ -19,65 +19,65 @@ export class ConnectionsService {
 
   async addConnection(connectData: CreateConnectionDto, userId: string) {
     const user = await this.userModel.findOne({ _id: userId });
-
     if (!user) {
       throw new BadRequestException('user Not exists');
     }
-
-    const exist = await this.profileModel.findOne({ userId: user._id });
-
-    if (!exist) {
+    const profile = await this.profileModel.findOne({ userId: user._id });
+    if (!profile) {
       throw new BadRequestException('profile already exist');
     }
+    console.log(connectData.connectionProfileId, profile._id.toString());
+
+    const id = profile._id.toString();
+
+    const connect = await this.connectionModel.findOne({
+      connectionProfileId: id,
+      profileId: connectData.profileId,
+    });
+
+    return { connect };
 
     // const connectionExist = await this.profileModel.findOne({
     //   _id: connectData.connectionProfileId,
     // });
-
     // if (!connectionExist) {
     //   throw new BadRequestException('User already exist');
-
     // }
-
     if (connectData.status === 'Pending') {
       const connect = new this.connectionModel();
-      connect.profileId = exist._id;
+      connect.profileId = profile._id;
       connect.connectionProfileId = connectData.connectionProfileId;
       connect.status = connectData.status;
-
       await connect.save();
       return { message: 'Invitaion Sent' };
     }
 
-    // const connect = await this.connectionModel.findById({
-    //   profileId: connectData.profileId,
-    // });
-
-    // console.log(connect);
+    console.log(connectData);
 
     if (connectData.status === 'Accepted') {
-      // const connect = await this.connectionModel.findOne({
-      //   profileId: new mongoose.Types.ObjectId(connectData.profileId),
-      //   connectionProfileId: exist._id,
-      // });
-      // connect.profileId = connectData.profileId;
-      // connect.connectionProfileId = exist._id;
-      // connect.status = connectData.status;
-
-      // await connect.save();
+      const connect = await this.connectionModel.findOne({
+        profileId: connectData.profileId,
+        connectionProfileId: profile._id,
+      });
+      connect.profileId = connectData.profileId;
+      connect.connectionProfileId = profile._id;
+      connect.status = connectData.status;
+      await connect.save();
       return { message: 'Invitaion Accepted' };
     }
 
-    // if (connectData.status === 'Rejected') {
-    //   await this.connectionModel.deleteOne({
-    //     where: {
-    //       connectionProfileId: connectData.connectionProfileId,
-    //       profileId: exist._id,
-    //     },
-    //   });
+    if (connectData.status === 'Rejected') {
+      const data = await this.connectionModel.findOneAndDelete({
+        connectionProfileId: connectData.connectionProfileId,
+        profileId: connectData.profileId,
+      });
 
-    //   return { message: 'Invitaion Reverted' };
-    // }
+      if (data) {
+        return { message: 'Invitaion Reverted' };
+      } else {
+        throw new BadRequestException('Error Occured');
+      }
+    }
   }
 
   async findAll(userId: string) {
