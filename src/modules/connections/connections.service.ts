@@ -36,6 +36,7 @@ export class ConnectionsService {
 
     // if (!connectionExist) {
     //   throw new BadRequestException('User already exist');
+
     // }
 
     if (connectData.status === 'Pending') {
@@ -48,16 +49,17 @@ export class ConnectionsService {
       return { message: 'Invitaion Sent' };
     }
 
-    const connect = await this.connectionModel.findOne({
-      profileId: connectData.profileId,
-    });
-    console.log(connect);
+    // const connect = await this.connectionModel.findById({
+    //   profileId: connectData.profileId,
+    // });
+
+    // console.log(connect);
 
     if (connectData.status === 'Accepted') {
-      const connect = await this.connectionModel.findOne({
-        profileId: new mongoose.Types.ObjectId(connectData.profileId),
-        // connectionProfileId: exist._id,
-      });
+      // const connect = await this.connectionModel.findOne({
+      //   profileId: new mongoose.Types.ObjectId(connectData.profileId),
+      //   connectionProfileId: exist._id,
+      // });
       // connect.profileId = connectData.profileId;
       // connect.connectionProfileId = exist._id;
       // connect.status = connectData.status;
@@ -66,17 +68,16 @@ export class ConnectionsService {
       return { message: 'Invitaion Accepted' };
     }
 
-    if (connectData.status === 'Rejected') {
-      await this.connectionModel.deleteOne({
-        where: {
-          status: 'Rejected',
-          connectionProfileId: connectData.connectionProfileId,
-          profileId: exist._id,
-        },
-      });
+    // if (connectData.status === 'Rejected') {
+    //   await this.connectionModel.deleteOne({
+    //     where: {
+    //       connectionProfileId: connectData.connectionProfileId,
+    //       profileId: exist._id,
+    //     },
+    //   });
 
-      return { message: 'Invitaion Reverted' };
-    }
+    //   return { message: 'Invitaion Reverted' };
+    // }
   }
 
   async findAll(userId: string) {
