@@ -26,23 +26,7 @@ export class ConnectionsService {
     if (!profile) {
       throw new BadRequestException('profile already exist');
     }
-    console.log(connectData.connectionProfileId, profile._id.toString());
 
-    const id = profile._id.toString();
-
-    const connect = await this.connectionModel.findOne({
-      connectionProfileId: id,
-      profileId: connectData.profileId,
-    });
-
-    return { connect };
-
-    // const connectionExist = await this.profileModel.findOne({
-    //   _id: connectData.connectionProfileId,
-    // });
-    // if (!connectionExist) {
-    //   throw new BadRequestException('User already exist');
-    // }
     if (connectData.status === 'Pending') {
       const connect = new this.connectionModel();
       connect.profileId = profile._id;
@@ -52,15 +36,13 @@ export class ConnectionsService {
       return { message: 'Invitaion Sent' };
     }
 
-    console.log(connectData);
-
     if (connectData.status === 'Accepted') {
       const connect = await this.connectionModel.findOne({
         profileId: connectData.profileId,
-        connectionProfileId: profile._id,
+        connectionProfileId: profile.id,
       });
       connect.profileId = connectData.profileId;
-      connect.connectionProfileId = profile._id;
+      connect.connectionProfileId = profile.id;
       connect.status = connectData.status;
       await connect.save();
       return { message: 'Invitaion Accepted' };
@@ -69,7 +51,7 @@ export class ConnectionsService {
     if (connectData.status === 'Rejected') {
       const data = await this.connectionModel.findOneAndDelete({
         connectionProfileId: connectData.connectionProfileId,
-        profileId: connectData.profileId,
+        profileId: profile.id,
       });
 
       if (data) {
