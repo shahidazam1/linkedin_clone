@@ -126,29 +126,11 @@ export class ConnectionsService {
       throw new BadRequestException('Pofile Not Found');
     }
 
-    const people = await this.connectionModel.aggregate([
+    const connnectionMyRequest = await this.connectionModel.aggregate([
       {
         $match: {
-          connectionProfileId: profile._id,
           status: 'Accepted',
-          $or: [
-            { connectionProfileId: profile._id },
-            { profileId: profile._id },
-          ],
-        },
-      },
-      {
-        $lookup: {
-          from: 'profiles',
-          localField: 'profileId',
-          foreignField: '_id',
-          as: 'profile',
-        },
-      },
-      {
-        $unwind: {
-          path: '$profile',
-          preserveNullAndEmptyArrays: true,
+          profileId: profile._id,
         },
       },
       {
@@ -167,7 +149,30 @@ export class ConnectionsService {
       },
     ]);
 
-    return people;
+    const connnectionTheyRequest = await this.connectionModel.aggregate([
+      {
+        $match: {
+          status: 'Accepted',
+          connectionProfileId: profile._id,
+        },
+      },
+      {
+        $lookup: {
+          from: 'profiles',
+          localField: 'profileId',
+          foreignField: '_id',
+          as: 'profile',
+        },
+      },
+      {
+        $unwind: {
+          path: '$profile',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ]);
+
+    return [...connnectionMyRequest, ...connnectionTheyRequest];
   }
 
   findOne(id: number) {
