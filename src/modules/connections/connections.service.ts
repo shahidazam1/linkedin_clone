@@ -119,6 +119,8 @@ export class ConnectionsService {
     return people;
   }
 
+  //this is my connections
+
   async getMyConnections(userId) {
     const profile = await this.profileModel.findOne({ userId });
 
