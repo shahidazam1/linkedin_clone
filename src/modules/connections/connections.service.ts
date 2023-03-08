@@ -27,6 +27,8 @@ export class ConnectionsService {
       throw new BadRequestException('profile already exist');
     }
 
+    //Connctions
+
     if (connectData.status === 'Pending') {
       const connect = new this.connectionModel();
       connect.profileId = profile._id;
