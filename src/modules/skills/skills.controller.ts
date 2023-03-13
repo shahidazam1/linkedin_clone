@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { SkillsService } from './skills.service';
 import { CreateSkillDto } from './dto/create-skill.dto';
-import { UpdateSkillDto } from './dto/update-skill.dto';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)

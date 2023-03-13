@@ -43,9 +43,10 @@ export class ConnectionsService {
         profileId: connectData.profileId,
         connectionProfileId: profile.id,
       });
-      connect.profileId = connectData.profileId;
-      connect.connectionProfileId = profile.id;
+
       connect.status = connectData.status;
+      connect.profileId = connectData.profileId;
+      connect.connectionProfileId = profile._id;
       await connect.save();
       return { message: 'Invitaion Accepted' };
     }

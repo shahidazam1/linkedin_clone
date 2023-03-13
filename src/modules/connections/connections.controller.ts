@@ -32,7 +32,6 @@ export class ConnectionsController {
   getAllInvitations(@Req() req: any) {
     return this.connectionsService.getAllInvitations(req.user.id);
   }
-  //get the user Connections
 
   @Get('/my-connections')
   getMyConnections(@Req() req: any) {
