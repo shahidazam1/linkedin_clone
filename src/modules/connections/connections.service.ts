@@ -39,15 +39,15 @@ export class ConnectionsService {
     }
 
     if (connectData.status === 'Accepted') {
-      const connect = await this.connectionModel.findOne({
-        profileId: connectData.profileId,
-        connectionProfileId: profile.id,
-      });
+      // const connect = await this.connectionModel.findOne({
+      //   profileId: connectData.profileId,
+      //   connectionProfileId: profile.id,
+      // });
 
-      connect.status = connectData.status;
-      connect.profileId = connectData.profileId;
-      connect.connectionProfileId = profile._id;
-      await connect.save();
+      // connect.status = connectData.status;
+      // connect.profileId = connectData.profileId;
+      // connect.connectionProfileId = profile._id;
+      // await connect.save();
       return { message: 'Invitaion Accepted' };
     }
 
